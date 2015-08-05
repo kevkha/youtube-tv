@@ -5,19 +5,25 @@
 var requestHandle = null;
 var searchYoutube = function(query, callback) {
 
-  var maxResults = 25;
-
-  // This searches the Youtube API endpoint and loads a list of results
-  var endpoint = "http://gdata.youtube.com/feeds/api/videos?q="+ encodeURIComponent(query) +"&format=5&v=2&max-results="+ maxResults +"&alt=jsonc";
+  // This searches the Youtube API v3 endpoint and loads a list of results
+  // Required API Key, replace <YOUR-API-KEY> with your key
 
   if( requestHandle !== null ){ requestHandle.abort(); }
 
   requestHandle = $.ajax({
-    type: "GET",
-    url: endpoint,
+    method: "GET",
+    url: 'https://www.googleapis.com/youtube/v3/search',
+    data: {
+          key: '<YOUR-API-KEY>',
+          type: 'video',
+          maxResults: '25',
+          part: 'id,snippet',
+          fields: 'items/id,items/snippet/title,items/snippet/description,items/snippet/thumbnails/default,items/snippet/channelTitle',
+          q: query
+    },
     dataType: "jsonp",
     success: function(response) {
-      renderSearchResults( response.data.items );
+      renderSearchResults( response.items );
 
       if( typeof callback === 'function' ) {
         callback();
@@ -39,12 +45,12 @@ var renderSearchResults = function( videos ) {
     // You should really use something like handlebars here
     var $video = $template.clone();
 
-    $video.data('id', video.id);
-    $video.data('title', video.title);
-    $video.data('thumbnail', video.thumbnail.hqDefault);
+    $video.data('id', video.id.videoId);
+    $video.data('title', video.snippet.title);
+    $video.data('thumbnail', video.snippet.thumbnails.default.url);
 
-    $video.find('img').attr('src', video.thumbnail.hqDefault );
-    $video.find('h2').text( video.title );
+    $video.find('img').attr('src', video.snippet.thumbnails.default.url);
+    $video.find('h2').text( video.snippet.title );
 
     $('#results').append($video);
   });
