@@ -9,6 +9,7 @@ module.exports = function(grunt) {
 
         version: "0.12.3", // Node-webkit version
         build_dir: "./build",
+        cacheDir: './build/cache',
 
         mac_icns: "./assets/icon.icns",
         mac: true,
@@ -25,12 +26,12 @@ module.exports = function(grunt) {
         files: [
           {
             src: 'libraries/windows/ffmpegsumo.dll',
-            dest: 'build/cache/win/0.12.3/ffmpegsumo.dll',
+            dest: 'build/cache/0.12.3/win32/ffmpegsumo.dll',
             flatten: true
           },
           {
             src: 'libraries/mac/ffmpegsumo.so',
-            dest: 'build/cache/mac/0.12.3/nwjs-v0.12.3-osx-ia32/nwjs.app/Contents/Frameworks/nwjs Framework.framework/Libraries/ffmpegsumo.so',
+            dest: 'build/cache/0.12.3/osx32/nwjs.app/Contents/Frameworks/nwjs Framework.framework/Libraries/ffmpegsumo.so',
             flatten: true
           }
         ]
@@ -42,7 +43,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-nw-builder");
 
-  grunt.registerTask("nodewebkitbuild", ["nwjs", "copy"]);
+  // uncomment if need to copy FFMPEG libraries
+  // grunt.registerTask("nodewebkitbuild", ["nwjs", "copy"]);
+
+  // build without copy of FFMPEG libraries
+  grunt.registerTask("nodewebkitbuild", ["nwjs"]);
   grunt.registerTask("copylibs", ["copy"]);
 
  };
